@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_supply_order" model="ir.actions.report">
+        <field name="name">Supply Order</field>
+        <field name="model">supply.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">company_custom.report_supply_order</field>
+        <field name="report_file">company_custom.report_supply_order</field>
+        <field name="binding_model_id" ref="model_supply_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_supply_order">
+        <t t-foreach="docs" t-as="property">
+            <p style="page-break-before:always;"> </p>
+            <t t-set="company" t-value="env.company"/>
+            <t t-set="i" t-value="res_company"/>
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+
+                        <div style="font-size: 17px;">
+                            <h3 t-if="property.order_number">
+                                <span t-field="property.order_number"/>
+                            </h3>
+                            <div>
+                                <strong>Customer: </strong>
+                                <span t-field="property.customer_id"/>
+                            </div>
+                            <div>
+                                <strong>Issue Date: </strong>
+                                <span t-field="property.order_date"/>
+                            </div>
+                            <div>
+                                <strong>Expire Date: </strong>
+                                <span t-field="property.expire_date"/>
+                            </div>
+                            <div>
+                                <strong>Award Notification: </strong>
+                                <span t-field="property.award_notification_id"/>
+                            </div>
+                            <br></br>
+                            <br></br>
+
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Sub Customer</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Unit Price</th>
+                                        <th>Total Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="lines" t-value="property.mapped('supply_order_line_ids')"/>
+                                    <tr t-foreach="lines" t-as="line">
+                                        <td>
+                                            <span t-field="line.end_customer_id"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.product_id"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.product_quantity"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.product_unit_price"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.product_total_price"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <br></br>
+                            <div class="clearfix" name="so_total_summary">
+                                <div id="total" class="row" name="total">
+                                    <div t-attf-class="#{'col-6' if report_type != 'html' else 'col-sm-7 col-md-6'} ml-auto">
+                                        <table class="table table-sm">
+                                            <!-- Tax totals -->
+                                            <tr class="border-black o_total">
+                                                <td><strong>Total</strong></td>
+                                                <td class="text-right">
+                                                    <span t-field="property.supply_order_total"/>
+                                                </td>
+                                            </tr>
+
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
